@@ -10,7 +10,7 @@ namespace Bulky.DataAccess.Repository.IRepository
     public interface IRepository<T> where T : class
     {
         IEnumerable<T> GetAll();
-        T GetById(Expression<Func<T, bool>> filter);
+        T Get(Expression<Func<T, bool>> filter);
         void Create(T entity);
         void Delete(T entity);
         void DeleteRange(IEnumerable<T> entities);
