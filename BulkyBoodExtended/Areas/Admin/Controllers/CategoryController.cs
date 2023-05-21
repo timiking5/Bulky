@@ -3,20 +3,21 @@ using Bulky.DataAccess.Repository;
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BulkyBookExtended.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository CategoryRepo;
-        public CategoryController(ICategoryRepository repo)
+        private readonly IUnitOfWork _unitOfWork;
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-            CategoryRepo = repo;
+            _unitOfWork = unitOfWork;
         }
         public IActionResult Index()
         {
-            var categoryList = CategoryRepo.GetAll();
+            var categoryList = _unitOfWork.Category.GetAll();
             return View(categoryList);
         }
         public IActionResult Create()
@@ -32,7 +33,7 @@ namespace BulkyBookExtended.Areas.Admin.Controllers
             }
             if (ModelState.IsValid)
             {
-                CategoryRepo.Create(model);
+                _unitOfWork.Category.Create(model);
                 TempData["success"] = "Category created successfully!";
                 return RedirectToAction("Index");
             }
@@ -44,7 +45,7 @@ namespace BulkyBookExtended.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var categoryFromDb = CategoryRepo.Get(x => x.Id == id);
+            var categoryFromDb = _unitOfWork.Category.Get(x => x.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
@@ -56,7 +57,7 @@ namespace BulkyBookExtended.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                CategoryRepo.Update(model);
+                _unitOfWork.Category.Update(model);
                 TempData["success"] = "Category updated successfully!";
                 return RedirectToAction("Index");
             }
@@ -68,7 +69,7 @@ namespace BulkyBookExtended.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var categoryFromDb = CategoryRepo.Get(x => x.Id == id);
+            var categoryFromDb = _unitOfWork.Category.Get(x => x.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
@@ -78,12 +79,12 @@ namespace BulkyBookExtended.Areas.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            var categoryFromDb = CategoryRepo.Get(x => x.Id == id);
+            var categoryFromDb = _unitOfWork.Category.Get(x => x.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
             }
-            CategoryRepo.Delete(categoryFromDb);
+            _unitOfWork.Category.Delete(categoryFromDb);
             TempData["success"] = "Category deleted successfully!";
             return RedirectToAction("Index");
         }
