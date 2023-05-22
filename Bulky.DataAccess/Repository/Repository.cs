@@ -19,7 +19,7 @@ namespace Bulky.DataAccess.Repository
             _dbContext = dbContext;
             DbSet = _dbContext.Set<T>();
         }
-        public void Create(T entity)
+        public virtual void Create(T entity)
         {
             DbSet.Add(entity);
             _dbContext.SaveChanges();
@@ -37,15 +37,31 @@ namespace Bulky.DataAccess.Repository
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = DbSet;
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
             return query.ToList();
         }
 
-        public T Get(Expression<Func<T, bool>> filter)
+        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = DbSet;
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
             return query.Where(filter).FirstOrDefault();
         }
     }

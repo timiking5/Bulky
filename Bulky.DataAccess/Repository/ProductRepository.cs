@@ -4,6 +4,7 @@ using Bulky.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,6 +33,15 @@ namespace Bulky.DataAccess.Repository
                     productFromDb.ImageUrl = product.ImageUrl;
                 }
             }
+            _dbContext.SaveChanges();
+        }
+        public override void Create(Product entity)
+        {
+            if (entity.ImageUrl == null)
+            {
+                entity.ImageUrl = "";
+            }
+            _dbContext.Add(entity);
             _dbContext.SaveChanges();
         }
     }
